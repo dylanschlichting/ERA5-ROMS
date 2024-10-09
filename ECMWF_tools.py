@@ -46,13 +46,13 @@ class ECMWF_tools:
                     metadata["short_name"],
                     year,
                 )
-                roms_outfile = f"{out_filename[0:-3]}_roms.nc"
+                roms_outfile = out_filename[0:-3]+'_roms.nc'
                 if os.path.exists(roms_outfile):
                     if not self.config_ecmwf.skip_existing_files:
                         os.remove(out_filename)
                         processes.append((parameter, str(year), out_filename))
-                    else:
-                        print(f"Skipping existing file: {out_filename}")
+                    # else:
+                        # print(f"Skipping existing file: {out_filename}")
                 else:
                     processes.append((parameter, str(year), out_filename))
         return processes
@@ -194,7 +194,7 @@ if __name__ == "__main__":
     def update(*a):
         pbar.update()
 
-    pool = multiprocessing.Pool(processes=4)
+    pool = multiprocessing.Pool(processes=128)
     pool.map(tool.submit_request, requests)
     pool.close()
     pool.join()
