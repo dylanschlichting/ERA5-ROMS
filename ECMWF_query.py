@@ -8,12 +8,12 @@ class ECMWF_query:
         self.setup_logging()
 
         self.use_era5 = True
-        self.start_year = 2000
-        self.end_year = 2001
-        self.project = "ROHO800"
+        self.start_year = 1999
+        self.end_year = 2000
+        self.project = "txla"
         self.area = self.get_area_for_project(self.project)
         self.skip_existing_files=True
-        self.resultsdir = f"../oceanography/ERA5/{self.project}/"
+        self.resultsdir = '/global/cfs/cdirs/m4304/txla_mod/hindcast/inputs/frc/era5/1999/'
         self.debug = False
 
         self.extract_data_every_N_hours = False
@@ -54,9 +54,9 @@ class ECMWF_query:
 
         # Additional variables that can be downloaded if needed
         if self.optionals:
-            self.parameters.extend([#'evaporation',
-                                    #'mean_surface_sensible_heat_flux',
-                                    #'mean_surface_latent_heat_flux',
+            self.parameters.extend(['evaporation',
+                                    'mean_surface_sensible_heat_flux',
+                                    'mean_surface_latent_heat_flux',
                                     'mean_surface_net_long_wave_radiation_flux'])
         if not os.path.exists(self.resultsdir):
             os.makedirs(self.resultsdir, exist_ok=True)
@@ -64,15 +64,14 @@ class ECMWF_query:
     def get_area_for_project(self, project):
         # Setup project dependent area to extract
         # North/West/South/East
-        return {'ROHO800': '62/1/56/10',
-                'A20': '90/-180/40/180'}[project]
+        return {'txla': '35/-100/20/-85'}[project]
 
     def setup_logging(self):
         logger = logging.getLogger()
         logger.setLevel(logging.DEBUG)
 
     def info(self):
-        logging.info("[ECMWF_query] ERA5: \n Reanalysis: 0.25°x0.25° (atmosphere), 0.5°x0.5° (ocean waves) \n \
+        logging.info("[ECMWF_query] ERA5: \n Reanalysis: 0.25degx0.25deg (atmosphere), 0.5degx0.5deg (ocean waves) \n \
             Period: 1979 - present \n \
             More info on ERA5 can be found here:\n \
             https://cds.climate.copernicus.eu/cdsapp#!/dataset/reanalysis-era5-single-levels-monthly-means?tab=overview")
@@ -87,7 +86,7 @@ class ECMWF_query:
                                    'roms_name': 'Tair',
                                    'name': '2 metre temperature',
                                    'units': 'K',
-                                   'time_name': 'Tair_time'},
+                                   'time_name': 'tair_time'},
                 '2m_dewpoint_temperature': {'parameter_id': '168.128',
                                             'short_name': 'd2m',
                                             'roms_name': 'Qair',
