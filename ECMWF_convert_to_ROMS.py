@@ -32,12 +32,16 @@ class ECMWF_convert_to_ROMS:
         # ERA5 CDS requests can return a mixture of ERA5 and ERA5T data
         # in this case there is an extra dimension and we need to reduce that dimension
         # https://confluence.ecmwf.int/pages/viewpage.action?pageId=173385064
-        if 'expver' in dset.variables.keys():
-            dimid = dset.variables[metadata['short_name']].dimensions.index("expver")
-            da = np.mean(dset.variables[metadata['short_name']][:],axis=dimid)
-        else:
-            da = dset.variables[metadata['short_name']][:]
-        masked_array = np.ma.masked_where(da == dset.variables[metadata['short_name']].missing_value, da)
+        # if 'expver' in dset.variables.keys():
+            # dimid = dset.variables[metadata['short_name']].dimensions.index("expver")
+            # da = np.mean(dset.variables[metadata['short_name']][:],axis=dimid)
+        # else:
+            # da = dset.variables[metadata['short_name']][:]
+        da = dset.variables[metadata['short_name']][:]
+        #Missing value is not defined, manually set it. 
+        missing_value = 3.40282346638529e+38
+        # masked_array = np.ma.masked_where(da == dset.variables[metadata['short_name']].missing_value, da)
+        masked_array = np.ma.masked_where(da == missing_value, da)
         logging.debug("[ECMWF_convert_to_ROMS] Will convert for parameter: {}".format(parameter))
         if parameter in self.irradiance_variables():
             # masked_array = np.ma.divide(masked_array, (3600. * 3.0))
@@ -104,18 +108,21 @@ class ECMWF_convert_to_ROMS:
         """
 
         if parameter in self.irradiance_variables() or parameter in ["total_precipitation"]:
-            era5_time = era5_time - 0.5
+            era5_time = era5_time #+ 0.5
             print(era5_time)
         return era5_time
 
     # We change the reference date to be equal to the standard ROMS
     # reference time 1948-01-01 so that we can optionally use ocean_time as time name
     def change_reference_date(self, ds, config_ecmwf: ECMWF_query, parameter: str):
-        era5_time = ds.variables['time'][:]
+        # era5_time = ds.variables['time'][:]
+        era5_time = ds.variables['valid_time'][:]
         era5_time = self.adjust_time_for_integrated_variables(era5_time, parameter)
 
-        era5_time_units = ds.variables['time'].units
-        era5_time_cal = ds.variables['time'].calendar
+        # era5_time_units = ds.variables['time'].units
+        era5_time_units = ds.variables['valid_time'].units
+        # era5_time_cal = ds.variables['time'].calendar
+        era5_time_cal = ds.variables['valid_time'].calendar
         logging.debug(
             f"[ECMWF_convert_to_ROMS] Original time: {era5_time[0]} to {era5_time[-1]} cal: {era5_time_cal} units: {era5_time_units}")
 
