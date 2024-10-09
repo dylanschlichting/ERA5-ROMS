@@ -3,6 +3,9 @@
 ![CodeCov][image-3]
 
 ## Download ERA5 and convert to ROMS format
+**update 09.10.2024** 
+Modified by Dylan Schlichting for work with the TXLA ROMS model. ```save_forcing_new.py``` added to ensure variables are compatible with COAWST v3.8.
+
 **update 15.01.2022 All tests successful**
 This latest version of the toolbox has now been tested for both the `Rutgers` and `Kate` Hedstroms versions of the code. For both versions, the correct forcing files are created and are read correctly by the ROMS source code. In both tests cases the results show an improvement in vertical mixing of heat in the water column due to the higher time frequency compared to ERA INTERIM.
 
